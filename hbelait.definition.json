@@ -1,0 +1,129 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "workflows_hbelait_name": {
+            "defaultValue": "hbelait",
+            "type": "string"
+        },
+        "workflows_hbelait_parameters_$connections": {
+            "defaultValue": {
+                "office365": {
+                    "connectionId": "/subscriptions/74457a84-5280-4ade-aa47-f5021e3d42b5/resourceGroups/AJG/providers/Microsoft.Web/connections/office365",
+                    "connectionName": "office365",
+                    "id": "/subscriptions/74457a84-5280-4ade-aa47-f5021e3d42b5/providers/Microsoft.Web/locations/uksouth/managedApis/office365"
+                }
+            },
+            "type": "Object"
+        }
+    },
+    "resources": [
+        {
+            "apiVersion": "2017-07-01",
+            "dependsOn": [],
+            "location": "uksouth",
+            "name": "[parameters('workflows_hbelait_name')]",
+            "properties": {
+                "definition": {
+                    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {
+                        "$connections": {
+                            "defaultValue": {
+                                "office365": {
+                                    "connectionId": "/subscriptions/74457a84-5280-4ade-aa47-f5021e3d42b5/resourceGroups/AJG/providers/Microsoft.Web/connections/office365",
+                                    "connectionName": "office365",
+                                    "id": "/subscriptions/74457a84-5280-4ade-aa47-f5021e3d42b5/providers/Microsoft.Web/locations/uksouth/managedApis/office365"
+                                }
+                            },
+                            "type": "Object"
+                        }
+                    },
+                    "triggers": {
+                        "manual": {
+                            "type": "Request",
+                            "kind": "Http",
+                            "inputs": {
+                                "schema": {
+                                    "properties": {
+                                        "colour": {
+                                            "type": "string"
+                                        },
+                                        "dataFactoryName": {
+                                            "type": "string"
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "pipelineName": {
+                                            "type": "string"
+                                        },
+                                        "pipelineRunId": {
+                                            "type": "string"
+                                        },
+                                        "time": {
+                                            "type": "string"
+                                        },
+                                        "title": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "actions": {
+                        "Initialize_variable": {
+                            "runAfter": {},
+                            "type": "InitializeVariable",
+                            "inputs": {
+                                "variables": [
+                                    {
+                                        "name": "email body",
+                                        "type": "string",
+                                        "value": "<hr/>\n<h2 style='color:@{triggerBody()?['colour']}'>@{triggerBody()?['title']}</h2>\n<hr/>\nData Factory Name: <b>@{triggerBody()?['dataFactoryName']}</b><br/>\nPipeline Name: <b>@{triggerBody()?['pipelineName']}</b><br/>\nPipeline Run Id: <b>@{triggerBody()?['pipelineRunId']}</b><br/>\nTime: <b>@{triggerBody()?['time']}</b><br/>\n<hr/>\nInformation<br/>\n<p style='color:@{triggerBody()?['colour']}'>@{triggerBody()?['message']}</p>\n<hr/>\n<p style='color:gray;'>This email was generated automatically. Please do not respond to it. Contact team at: contact@contoso.com </p>"
+                                    }
+                                ]
+                            }
+                        },
+                        "Send_an_email_(V2)": {
+                            "runAfter": {
+                                "Initialize_variable": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "ApiConnection",
+                            "inputs": {
+                                "body": {
+                                    "Body": "<p>@{variables('email body')}</p>",
+                                    "Importance": "High",
+                                    "Subject": "@triggerBody()?['title']",
+                                    "To": "Himanshu.Badhwar@elait.com"
+                                },
+                                "host": {
+                                    "connection": {
+                                        "name": "@parameters('$connections')['office365']['connectionId']"
+                                    }
+                                },
+                                "method": "post",
+                                "path": "/v2/Mail"
+                            }
+                        }
+                    },
+                    "outputs": {}
+                },
+                "parameters": {
+                    "$connections": {
+                        "value": "[parameters('workflows_hbelait_parameters_$connections')]"
+                    }
+                },
+                "state": "Enabled"
+            },
+            "scale": null,
+            "tags": {},
+            "type": "Microsoft.Logic/workflows"
+        }
+    ],
+    "variables": {}
+}

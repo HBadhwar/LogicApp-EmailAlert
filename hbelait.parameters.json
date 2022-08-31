@@ -1,0 +1,18 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "workflows_hbelait_name": {
+            "value": "hbelait"
+        },
+        "workflows_hbelait_parameters_$connections": {
+            "value": {
+                "office365": {
+                    "connectionId": "/subscriptions/74457a84-5280-4ade-aa47-f5021e3d42b5/resourceGroups/AJG/providers/Microsoft.Web/connections/office365",
+                    "connectionName": "office365",
+                    "id": "/subscriptions/74457a84-5280-4ade-aa47-f5021e3d42b5/providers/Microsoft.Web/locations/uksouth/managedApis/office365"
+                }
+            }
+        }
+    }
+}
